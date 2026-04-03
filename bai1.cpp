@@ -1,86 +1,155 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <cmath>
 using namespace std;
 
-const double EPS = 1e-9;
+const double EPSILON = 1e-5; // Sai số cho phép khi so sánh số thực
+const double PI = 3.14159265358979323846;
 
-struct Point {
+class cDiem {
+private:
     double x, y;
-    Point(double x = 0, double y = 0) : x(x), y(y) {}
+public:
+    cDiem(double _x = 0, double _y = 0) : x(_x), y(_y) {}
+
+    void Nhap() {
+        cin >> x >> y;
+    }
+
+    void Xuat() const {
+        cout << "(" << x << ", " << y << ")";
+    }
+
+    double KhoangCach(const cDiem& other) const {
+        return sqrt(pow(x - other.x, 2) + pow(y - other.y, 2));
+    }
+
+    void TinhTien(double dx, double dy) {
+        x += dx;
+        y += dy;
+    }
+
+    void Quay(double gocDegree) {
+        double rad = gocDegree * PI / 180.0;
+        double newX = x * cos(rad) - y * sin(rad);
+        double newY = x * sin(rad) + y * cos(rad);
+        x = newX;
+        y = newY;
+    }
+
+    void PhongToThuNho(double k) {
+        x *= k;
+        y *= k;
+    }
 };
 
+// ================= LỚP TAM GIÁC =================
 class cTamGiac {
 private:
-    Point A, B, C;
+    cDiem A, B, C;
+    bool BangNhau(double a, double b) const {
+        return abs(a - b) < EPSILON;
+    }
+
 public:
     cTamGiac() {}
-    cTamGiac(Point a, Point b, Point c) : A(a), B(b), C(c) {}
+    cTamGiac(cDiem a, cDiem b, cDiem c) : A(a), B(b), C(c) {}
 
-    void nhap() {
-        cout << "A: "; cin >> A.x >> A.y;
-        cout << "B: "; cin >> B.x >> B.y;
-        cout << "C: "; cin >> C.x >> C.y;
+    bool HopLe() const {
+        double a = B.KhoangCach(C);
+        double b = A.KhoangCach(C);
+        double c = A.KhoangCach(B);
+        return (a + b > c) && (b + c > a) && (c + a > b);
     }
 
-    void xuat() {
-        cout << "A(" << A.x << "," << A.y << ") B(" << B.x << "," << B.y << ") C(" << C.x << "," << C.y << ")" << endl;
+    void Nhap() {
+        do {
+            cout << "Nhap toa do dinh A (x y): "; A.Nhap();
+            cout << "Nhap toa do dinh B (x y): "; B.Nhap();
+            cout << "Nhap toa do dinh C (x y): "; C.Nhap();
+            if (!HopLe()) {
+                cout << "3 diem khong tao thanh tam giac! Vui long nhap lai.\n";
+            }
+        } while (!HopLe());
     }
 
-    double dist(Point p1, Point p2) {
-        return sqrt((p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y));
+    void Xuat() const {
+        cout << "Tam giac tao boi 3 dinh: ";
+        A.Xuat(); cout << ", "; B.Xuat(); cout << ", "; C.Xuat(); cout << "\n";
     }
 
-    string loai() {
-        double ab = dist(A, B), bc = dist(B, C), ca = dist(C, A);
-        double a2 = ab*ab, b2 = bc*bc, c2 = ca*ca;
-        if (abs(ab - bc) < EPS && abs(bc - ca) < EPS) return "deu";
-        bool vuong = abs(a2 + b2 - c2) < EPS || abs(a2 + c2 - b2) < EPS || abs(b2 + c2 - a2) < EPS;
-        bool can = abs(ab - bc) < EPS || abs(bc - ca) < EPS || abs(ca - ab) < EPS;
-        if (vuong && can) return "vuong can";
-        if (vuong) return "vuong";
-        if (can) return "can";
-        return "thuong";
+    double ChuVi() const {
+        return B.KhoangCach(C) + A.KhoangCach(C) + A.KhoangCach(B);
     }
 
-    double chuVi() { return dist(A,B) + dist(B,C) + dist(C,A); }
-
-    double dienTich() { return 0.5 * abs(A.x*(B.y - C.y) + B.x*(C.y - A.y) + C.x*(A.y - B.y)); }
-
-    void tinhTien(double dx, double dy) {
-        A.x += dx; A.y += dy;
-        B.x += dx; B.y += dy;
-        C.x += dx; C.y += dy;
+    double DienTich() const {
+        double a = B.KhoangCach(C);
+        double b = A.KhoangCach(C);
+        double c = A.KhoangCach(B);
+        double p = (a + b + c) / 2.0;
+        return sqrt(p * (p - a) * (p - b) * (p - c));
     }
 
-    void quay(double goc, Point tam) {
-        double rad = goc * M_PI / 180.0, c = cos(rad), s = sin(rad);
-        auto rot = [&](Point& p) {
-            double x = p.x - tam.x, y = p.y - tam.y;
-            p.x = x*c - y*s + tam.x;
-            p.y = x*s + y*c + tam.y;
-        };
-        rot(A); rot(B); rot(C);
+    void PhanLoai() const {
+        double a = B.KhoangCach(C);
+        double b = A.KhoangCach(C);
+        double c = A.KhoangCach(B);
+
+        bool vuong = BangNhau(a*a + b*b, c*c) || BangNhau(a*a + c*c, b*b) || BangNhau(b*b + c*c, a*a);
+        bool can = BangNhau(a, b) || BangNhau(a, c) || BangNhau(b, c);
+        bool deu = BangNhau(a, b) && BangNhau(b, c);
+
+        cout << "Loai tam giac: ";
+        if (deu) cout << "Tam giac deu\n";
+        else if (vuong && can) cout << "Tam giac vuong can\n";
+        else if (vuong) cout << "Tam giac vuong\n";
+        else if (can) cout << "Tam giac can\n";
+        else cout << "Tam giac thuong\n";
     }
 
-    void phongTo(double k) {
-        A.x *= k; A.y *= k;
-        B.x *= k; B.y *= k;
-        C.x *= k; C.y *= k;
+    void TinhTien(double dx, double dy) {
+        A.TinhTien(dx, dy);
+        B.TinhTien(dx, dy);
+        C.TinhTien(dx, dy);
     }
 
-    void thuNho(double k) { phongTo(1.0 / k); }
+    void Quay(double gocDegree) {
+        A.Quay(gocDegree);
+        B.Quay(gocDegree);
+        C.Quay(gocDegree);
+    }
 
-    void ve() { cout << "Ve tam giac" << endl; }
+    void PhongToThuNho(double k) {
+        if (k == 0) return;
+        A.PhongToThuNho(k);
+        B.PhongToThuNho(k);
+        C.PhongToThuNho(k);
+    }
 };
 
+// ================= HÀM MAIN =================
 int main() {
-    cTamGiac t;
-    t.nhap();
-    t.xuat();
-    cout << "Loai: " << t.loai() << " Chu vi: " << t.chuVi() << " Dien tich: " << t.dienTich() << endl;
-    t.tinhTien(1,1); t.xuat();
-    t.quay(90, {0,0}); t.xuat();
-    t.phongTo(2); t.xuat();
-    t.thuNho(2); t.xuat();
-    t.ve();
+    cTamGiac tg;
+    cout << "--- KHOI TAO TAM GIAC ---\n";
+    tg.Nhap();
+    tg.Xuat();
+
+    cout << "\n--- THONG TIN TAM GIAC ---\n";
+    tg.PhanLoai();
+    cout << "Chu vi: " << tg.ChuVi() << "\n";
+    cout << "Dien tich: " << tg.DienTich() << "\n";
+
+    cout << "\n--- PHEP BIEN DOI ---\n";
+    cout << "1. Tinh tien theo vector (2, 3):\n";
+    tg.TinhTien(2, 3);
+    tg.Xuat();
+
+    cout << "2. Quay 90 do quanh goc toa do:\n";
+    tg.Quay(90);
+    tg.Xuat();
+
+    cout << "3. Phong to gap 2 lan:\n";
+    tg.PhongToThuNho(2);
+    tg.Xuat();
+
     return 0;
 }
