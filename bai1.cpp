@@ -5,66 +5,33 @@ using namespace std;
 const double EPSILON = 1e-5; 
 const double PI = 3.14159265358979323846;
 
-class cDiem {
-private:
-    double x, y;
-public:
-    cDiem(double _x = 0, double _y = 0) : x(_x), y(_y) {}
-
-    void Nhap() {
-        cin >> x >> y;
-    }
-
-    void Xuat() const {
-        cout << "(" << x << ", " << y << ")";
-    }
-
-    double KhoangCach(const cDiem& other) const {
-        return sqrt(pow(x - other.x, 2) + pow(y - other.y, 2));
-    }
-
-    void TinhTien(double dx, double dy) {
-        x += dx;
-        y += dy;
-    }
-
-    void Quay(double gocDegree) {
-        double rad = gocDegree * PI / 180.0;
-        double newX = x * cos(rad) - y * sin(rad);
-        double newY = x * sin(rad) + y * cos(rad);
-        x = newX;
-        y = newY;
-    }
-
-    void PhongToThuNho(double k) {
-        x *= k;
-        y *= k;
-    }
-};
-
 class cTamGiac {
 private:
-    cDiem A, B, C;
+    double xA, yA, xB, yB, xC, yC;
+
+    double KhoangCach(double x1, double y1, double x2, double y2) const {
+        return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+    }
+
     bool BangNhau(double a, double b) const {
         return abs(a - b) < EPSILON;
     }
 
 public:
-    cTamGiac() {}
-    cTamGiac(cDiem a, cDiem b, cDiem c) : A(a), B(b), C(c) {}
+    cTamGiac() : xA(0), yA(0), xB(0), yB(0), xC(0), yC(0) {}
 
     bool HopLe() const {
-        double a = B.KhoangCach(C);
-        double b = A.KhoangCach(C);
-        double c = A.KhoangCach(B);
+        double a = KhoangCach(xB, yB, xC, yC);
+        double b = KhoangCach(xA, yA, xC, yC);
+        double c = KhoangCach(xA, yA, xB, yB);
         return (a + b > c) && (b + c > a) && (c + a > b);
     }
 
     void Nhap() {
         do {
-            cout << "Nhap toa do dinh A (x y): "; A.Nhap();
-            cout << "Nhap toa do dinh B (x y): "; B.Nhap();
-            cout << "Nhap toa do dinh C (x y): "; C.Nhap();
+            cout << "Nhap toa do dinh A (x y): "; cin >> xA >> yA;
+            cout << "Nhap toa do dinh B (x y): "; cin >> xB >> yB;
+            cout << "Nhap toa do dinh C (x y): "; cin >> xC >> yC;
             if (!HopLe()) {
                 cout << "3 diem khong tao thanh tam giac! Vui long nhap lai.\n";
             }
@@ -72,26 +39,28 @@ public:
     }
 
     void Xuat() const {
-        cout << "Tam giac tao boi 3 dinh: ";
-        A.Xuat(); cout << ", "; B.Xuat(); cout << ", "; C.Xuat(); cout << "\n";
+        cout << "Tam giac tao boi: A(" << xA << ", " << yA << "), "
+             << "B(" << xB << ", " << yB << "), C(" << xC << ", " << yC << ")\n";
     }
 
     double ChuVi() const {
-        return B.KhoangCach(C) + A.KhoangCach(C) + A.KhoangCach(B);
+        return KhoangCach(xB, yB, xC, yC) + 
+               KhoangCach(xA, yA, xC, yC) + 
+               KhoangCach(xA, yA, xB, yB);
     }
 
     double DienTich() const {
-        double a = B.KhoangCach(C);
-        double b = A.KhoangCach(C);
-        double c = A.KhoangCach(B);
+        double a = KhoangCach(xB, yB, xC, yC);
+        double b = KhoangCach(xA, yA, xC, yC);
+        double c = KhoangCach(xA, yA, xB, yB);
         double p = (a + b + c) / 2.0;
         return sqrt(p * (p - a) * (p - b) * (p - c));
     }
 
     void PhanLoai() const {
-        double a = B.KhoangCach(C);
-        double b = A.KhoangCach(C);
-        double c = A.KhoangCach(B);
+        double a = KhoangCach(xB, yB, xC, yC);
+        double b = KhoangCach(xA, yA, xC, yC);
+        double c = KhoangCach(xA, yA, xB, yB);
 
         bool vuong = BangNhau(a*a + b*b, c*c) || BangNhau(a*a + c*c, b*b) || BangNhau(b*b + c*c, a*a);
         bool can = BangNhau(a, b) || BangNhau(a, c) || BangNhau(b, c);
@@ -106,22 +75,29 @@ public:
     }
 
     void TinhTien(double dx, double dy) {
-        A.TinhTien(dx, dy);
-        B.TinhTien(dx, dy);
-        C.TinhTien(dx, dy);
+        xA += dx; yA += dy;
+        xB += dx; yB += dy;
+        xC += dx; yC += dy;
     }
 
     void Quay(double gocDegree) {
-        A.Quay(gocDegree);
-        B.Quay(gocDegree);
-        C.Quay(gocDegree);
+        double rad = gocDegree * PI / 180.0;
+        double cosA = cos(rad), sinA = sin(rad);
+        
+        double nxA = xA * cosA - yA * sinA; double nyA = xA * sinA + yA * cosA;
+        double nxB = xB * cosA - yB * sinA; double nyB = xB * sinA + yB * cosA;
+        double nxC = xC * cosA - yC * sinA; double nyC = xC * sinA + yC * cosA;
+
+        xA = nxA; yA = nyA;
+        xB = nxB; yB = nyB;
+        xC = nxC; yC = nyC;
     }
 
     void PhongToThuNho(double k) {
         if (k == 0) return;
-        A.PhongToThuNho(k);
-        B.PhongToThuNho(k);
-        C.PhongToThuNho(k);
+        xA *= k; yA *= k;
+        xB *= k; yB *= k;
+        xC *= k; yC *= k;
     }
 };
 
