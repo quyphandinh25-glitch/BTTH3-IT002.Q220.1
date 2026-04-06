@@ -2,7 +2,7 @@
 #include <cmath>
 using namespace std;
 
-const double EPSILON = 1e-5; // Sai số cho phép khi so sánh số thực
+const double EPSILON = 1e-5; 
 const double PI = 3.14159265358979323846;
 
 class cDiem {
@@ -42,7 +42,6 @@ public:
     }
 };
 
-// ================= LỚP TAM GIÁC =================
 class cTamGiac {
 private:
     cDiem A, B, C;
@@ -126,7 +125,6 @@ public:
     }
 };
 
-// ================= HÀM MAIN =================
 int main() {
     cTamGiac tg;
     cout << "--- KHOI TAO TAM GIAC ---\n";
