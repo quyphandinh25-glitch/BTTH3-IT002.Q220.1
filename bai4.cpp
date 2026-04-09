@@ -15,7 +15,6 @@ private:
         return true;
     }
 
-    
     void quickSort(int left, int right) {
         if (left >= right) return;
         int pivot = arr[(left + right) / 2];
@@ -35,7 +34,6 @@ private:
     }
 
 public:
- 
     cArray() {
         arr = nullptr;
         n = 0;
@@ -44,6 +42,19 @@ public:
     ~cArray() {
         if (arr != nullptr) {
             delete[] arr;
+        }
+    }
+
+    void nhapMang(int size) {
+        if (arr != nullptr) {
+            delete[] arr;
+        }
+        n = size;
+        arr = new int[n];
+        cout << "Moi nhap " << n << " phan tu:\n";
+        for (int i = 0; i < n; i++) {
+            cout << "arr[" << i << "] = ";
+            cin >> arr[i];
         }
     }
 
@@ -136,55 +147,85 @@ public:
     }
 };
 
-int main() {
+void hienThiMenu() {
     cArray a;
-    int size = 10;
-    
-    cout << "--- KHOI TAO MANG NGAU NHIEN ---\n";
-    a.taoMangNgauNhien(size);
-    cout << "Cac phan tu trong mang: ";
-    a.xuatMang();
+    int luaChon;
+    int size = 0;
 
-    cout << "\n--- XU LY CAC THAO TAC ---\n";
-   
-    int x;
-    cout << "Nhap gia tri x can dem: ";
-    cin >> x;
-    cout << "So lan xuat hien cua " << x << " la: " << a.demSoLanXuatHien(x) << " lan\n";
+    do {
+        cout << "\n================= MENU =================\n";
+        cout << "1. Nhap mang thu cong\n";
+        cout << "2. Tao mang ngau nhien\n";
+        cout << "3. Xuat mang\n";
+        cout << "4. Dem so lan xuat hien cua x\n";
+        cout << "5. Kiem tra mang co tang dan khong\n";
+        cout << "6. Tim so le nho nhat\n";
+        cout << "7. Tim so nguyen to lon nhat\n";
+        cout << "8. Sap xep mang TANG DAN (Quick Sort)\n";
+        cout << "9. Sap xep mang GIAM DAN (Selection Sort)\n";
+        cout << "0. Thoat chuong trinh\n";
+        cout << "========================================\n";
+        cout << "Nhap lua chon cua ban: ";
+        cin >> luaChon;
 
-    
-    if (a.kiemTraTangDan()) {
-        cout << "Mang dang sap xep tang dan.\n";
-    } else {
-        cout << "Mang KHONG tang dan.\n";
-    }
+        switch (luaChon) {
+            case 1:
+                cout << "Nhap so luong phan tu: ";
+                cin >> size;
+                a.nhapMang(size);
+                cout << "=> Nhap mang thanh cong!\n";
+                break;
+            case 2:
+                cout << "Nhap so luong phan tu can tao ngau nhien: ";
+                cin >> size;
+                a.taoMangNgauNhien(size);
+                cout << "=> Da tao mang ngau nhien!\n";
+                break;
+            case 3:
+                cout << "Cac phan tu trong mang: ";
+                a.xuatMang();
+                break;
+            case 4: {
+                int x;
+                cout << "Nhap gia tri x can dem: ";
+                cin >> x;
+                cout << "So lan xuat hien cua " << x << " la: " << a.demSoLanXuatHien(x) << " lan\n";
+                break;
+            }
+            case 5:
+                if (a.kiemTraTangDan()) cout << "=> Mang dang sap xep tang dan.\n";
+                else cout << "=> Mang KHONG tang dan.\n";
+                break;
+            case 6: {
+                int minOdd;
+                if (a.timPhanTuLeNhoNhat(minOdd)) cout << "=> So le nho nhat trong mang: " << minOdd << "\n";
+                else cout << "=> Khong co so le nao trong mang.\n";
+                break;
+            }
+            case 7: {
+                int maxPrime;
+                if (a.timSoNguyenToLonNhat(maxPrime)) cout << "=> So nguyen to lon nhat trong mang: " << maxPrime << "\n";
+                else cout << "=> Khong co so nguyen to nao trong mang.\n";
+                break;
+            }
+            case 8:
+                a.sapXepTangDan();
+                cout << "=> Da sap xep TANG DAN.\n";
+                break;
+            case 9:
+                a.sapXepGiamDan();
+                cout << "=> Da sap xep GIAM DAN.\n";
+                break;
+            case 0:
+                cout << "Thoat chuong trinh. Tam biet!\n";
+                break;
+            default:
+                cout << "Lua chon khong hop le. Vui long nhap lai!\n";
+        }
+    } while (luaChon != 0);
+}
 
-    
-    int minOdd;
-    if (a.timPhanTuLeNhoNhat(minOdd)) {
-        cout << "So le nho nhat trong mang: " << minOdd << "\n";
-    } else {
-        cout << "Khong co so le nao trong mang.\n";
-    }
-
-    int maxPrime;
-    if (a.timSoNguyenToLonNhat(maxPrime)) {
-        cout << "So nguyen to lon nhat trong mang: " << maxPrime << "\n";
-    } else {
-        cout << "Khong co so nguyen to nao trong mang.\n";
-    }
-
-    cout << "\n--- SAP XEP MANG ---\n";
-    
-    a.sapXepTangDan();
-    cout << "Mang sau khi sap xep TANG DAN (Quick Sort): ";
-    a.xuatMang();
-
-    cout << "Kiem tra lai: Mang co tang dan khong? -> " << (a.kiemTraTangDan() ? "Co" : "Khong") << "\n";
-
-    a.sapXepGiamDan();
-    cout << "Mang sau khi sap xep GIAM DAN (Selection Sort): ";
-    a.xuatMang();
-
+int main() {
+    hienThiMenu();
     return 0;
 }
