@@ -9,9 +9,7 @@ private:
 
 public:
     cNgay() {
-        ngay = 1;
-        thang = 1;
-        nam = 2000;
+        ngay = 1; thang = 1; nam = 2000;
     }
 
     void Nhap() {
@@ -39,25 +37,13 @@ private:
     double donGia;
 
 public:
-    
     cNhanVienSX() {
-        maNV = "";
-        hoTen = "";
-        soSP = 0;
-        donGia = 0;
+        maNV = ""; hoTen = ""; soSP = 0; donGia = 0;
     }
 
-    double TinhLuong() {
-        return soSP * donGia;
-    }
-    
-    cNgay getNgaySinh() {
-        return ngaySinh;
-    }
-    
-    string getHoTen() {
-        return hoTen;
-    }
+    double TinhLuong() { return soSP * donGia; }
+    cNgay getNgaySinh() { return ngaySinh; }
+    string getHoTen() { return hoTen; }
 
     void Nhap() {
         cout << "Nhap ma NV: ";
@@ -75,75 +61,87 @@ public:
     }
 
     void Xuat() {
-        cout << "Ma NV: " << maNV 
-             << " | Ten: " << hoTen 
-             << " | Ngay sinh: ";
-        ngaySinh.Xuat(); // Gọi hàm xuất của lớp cNgay
+        cout << "Ma NV: " << maNV << " | Ten: " << hoTen << " | Ngay sinh: ";
+        ngaySinh.Xuat();
         cout << " | Luong: " << TinhLuong() << endl;
     }
 };
 
-
-int main() {
-    cNhanVienSX ds[100]; 
+class cDanhSachNV {
+private:
+    cNhanVienSX ds[100];
     int n;
 
-    cout << "Nhap so luong nhan vien: ";
-    cin >> n;
-    for (int i = 0; i < n; i++) {
-        cout << "\n--- Nhap nhan vien thu " << i + 1 << " ---\n";
-        ds[i].Nhap();
-    }
-
-    cout << "\n=== DANH SACH NHAN VIEN ===\n";
-    for (int i = 0; i < n; i++) {
-        ds[i].Xuat();
-    }
-
-    double tongLuong = 0;
-    double luongMin = ds[0].TinhLuong();
-    int indexMinLuong = 0;
-
-    for (int i = 0; i < n; i++) {
-        double luongHT = ds[i].TinhLuong();
-        tongLuong += luongHT;
-        
-        if (luongHT < luongMin) {
-            luongMin = luongHT;
-            indexMinLuong = i;
+public:
+    void NhapDanhSach() {
+        cout << "Nhap so luong nhan vien: ";
+        cin >> n;
+        for (int i = 0; i < n; i++) {
+            cout << "\n--- Nhap nhan vien thu " << i + 1 << " ---\n";
+            ds[i].Nhap();
         }
     }
-    cout << "\nTong luong cong ty phai tra: " << tongLuong << endl;
-    cout << "Nhan vien co luong thap nhat la: " << ds[indexMinLuong].getHoTen() 
-         << " (" << luongMin << ")" << endl;
 
-    cNgay ngaySinhMin = ds[0].getNgaySinh();
-    int indexTuoiCao = 0;
-    
-    for (int i = 1; i < n; i++) {
-        if (ds[i].getNgaySinh().NhoHon(ngaySinhMin)) {
-            ngaySinhMin = ds[i].getNgaySinh();
-            indexTuoiCao = i;
+    void XuatDanhSach() {
+        cout << "\n=== DANH SACH NHAN VIEN ===\n";
+        for (int i = 0; i < n; i++) {
+            ds[i].Xuat();
         }
     }
-    cout << "Nhan vien lon tuoi nhat la: " << ds[indexTuoiCao].getHoTen() << " (Sinh ngay ";
-    ngaySinhMin.Xuat();
-    cout << ")" << endl;
 
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = i + 1; j < n; j++) {
-            if (ds[i].TinhLuong() > ds[j].TinhLuong()) {
-                cNhanVienSX temp = ds[i];
-                ds[i] = ds[j];
-                ds[j] = temp;
+    void ThongKe() {
+        if (n == 0) return;
+
+        double tongLuong = 0;
+        double luongMin = ds[0].TinhLuong();
+        int indexMinLuong = 0;
+        cNgay ngaySinhMin = ds[0].getNgaySinh();
+        int indexTuoiCao = 0;
+
+        for (int i = 0; i < n; i++) {
+            double luongHT = ds[i].TinhLuong();
+            tongLuong += luongHT;
+            
+            if (luongHT < luongMin) {
+                luongMin = luongHT;
+                indexMinLuong = i;
+            }
+
+            if (ds[i].getNgaySinh().NhoHon(ngaySinhMin)) {
+                ngaySinhMin = ds[i].getNgaySinh();
+                indexTuoiCao = i;
             }
         }
+
+        cout << "\nTong luong cong ty phai tra: " << tongLuong << endl;
+        cout << "Nhan vien co luong thap nhat: " << ds[indexMinLuong].getHoTen() << " (" << luongMin << ")\n";
+        cout << "Nhan vien lon tuoi nhat: " << ds[indexTuoiCao].getHoTen() << " (Sinh ngay ";
+        ngaySinhMin.Xuat();
+        cout << ")\n";
     }
 
-    cout << "\n=== DANH SACH SAU KHI SAP XEP LUONG TANG DAN ===\n";
-    for (int i = 0; i < n; i++) {
-        ds[i].Xuat();
+    void SapXepTangTheoLuong() {
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (ds[i].TinhLuong() > ds[j].TinhLuong()) {
+                    swap(ds[i], ds[j]); 
+                }
+            }
+        }
+        cout << "\n=== DANH SACH SAU KHI SAP XEP LUONG TANG DAN ===\n";
+        for (int i = 0; i < n; i++) {
+            ds[i].Xuat();
+        }
     }
+};
+
+int main() {
+    cDanhSachNV congTy;
+
+    congTy.NhapDanhSach();
+    congTy.XuatDanhSach();
+    congTy.ThongKe();
+    congTy.SapXepTangTheoLuong();
 
     return 0;
 }
