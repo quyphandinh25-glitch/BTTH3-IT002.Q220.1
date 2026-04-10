@@ -30,7 +30,7 @@ public:
         for (int i = n; i >= 0; i--) {
             cout << a[i] << "x^" << i;
             if (i > 0) {
-                cout << " + "; // In dấu cộng giữa các số
+                cout << " + "; 
             }
         }
         cout << "\n";
@@ -39,14 +39,14 @@ public:
     double TinhGiaTri(double x) {
         double ketQua = 0;
         for (int i = 0; i <= n; i++) {
-            ketQua += a[i] * pow(x, i); // pow(x, i) là x mũ i
+            ketQua += a[i] * pow(x, i); 
         }
         return ketQua;
     }
 
     cDaThuc Cong(cDaThuc dt2) {
-        cDaThuc kq; // Tạo đa thức kết quả
-        kq.n = max(this->n, dt2.n); // Bậc kết quả là bậc lớn nhất của 2 đa thức
+        cDaThuc kq; 
+        kq.n = max(this->n, dt2.n); 
 
         for (int i = 0; i <= kq.n; i++) {
             kq.a[i] = this->a[i] + dt2.a[i];
